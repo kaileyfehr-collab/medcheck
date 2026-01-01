@@ -2,420 +2,348 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Medication Cycle</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Medication Check</title>
   <style>
-    :root{
-      --bg: #0f172a;
-      --card: #111827;
-      --text: #e5e7eb;
-      --muted:#94a3b8;
-      --border:#243244;
-      --pill:#1f2937;
+    :root {
+      --bg: #0b1020;
+      --card: rgba(255,255,255,0.08);
+      --text: #eef2ff;
+      --muted: rgba(238,242,255,0.7);
+      --border: rgba(255,255,255,0.14);
+      --shadow: 0 18px 50px rgba(0,0,0,.35);
+      --radius: 18px;
 
-      --accent:#22c55e;    /* default green */
-      --accent2:#16a34a;
+      /* Medication colors */
+      --aqua: #22c55e;   /* Aquaphor */
+      --med:  #3b82f6;   /* Medication */
+      --taken: #22c55e;  /* Taken button green */
+      --btn: rgba(255,255,255,0.12);
+      --btnHover: rgba(255,255,255,0.18);
     }
-    body{
-      margin:0;
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background: radial-gradient(1000px 600px at 20% 10%, rgba(34,197,94,.15), transparent 50%),
-                  radial-gradient(900px 500px at 80% 20%, rgba(59,130,246,.12), transparent 55%),
-                  var(--bg);
-      color:var(--text);
-      min-height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:18px;
-    }
-    .wrap{ width:min(680px, 100%); }
-    .card{
-      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
-      border:1px solid var(--border);
-      border-radius:20px;
-      padding:18px;
-      box-shadow: 0 18px 40px rgba(0,0,0,.35);
-    }
-    .row{
-      display:flex;
-      gap:12px;
-      flex-wrap:wrap;
-      align-items:center;
-      justify-content:space-between;
-    }
-    h1{
-      margin:0;
-      font-size:20px;
-      letter-spacing:.2px;
-    }
-    .pill{
-      background: rgba(255,255,255,.04);
-      border:1px solid var(--border);
-      padding:8px 10px;
-      border-radius:999px;
-      font-size:13px;
-      color:var(--muted);
-    }
-    .big{
-      margin-top:14px;
-      border-radius:18px;
-      padding:16px;
-      border:1px solid var(--border);
-      background: rgba(17,24,39,.6);
-      position:relative;
-      overflow:hidden;
-    }
-    .big::before{
-      content:"";
-      position:absolute;
-      inset:-80px -60px auto auto;
-      width:220px;
-      height:220px;
-      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.18), transparent 55%);
-      filter: blur(0px);
-      opacity:.7;
-      transform: rotate(18deg);
-      pointer-events:none;
-    }
-    .label{
-      color:var(--muted);
-      font-size:13px;
-      margin-bottom:6px;
-    }
-    .med{
-      font-size:34px;
-      font-weight:800;
-      line-height:1.05;
-      margin:0 0 10px 0;
-    }
-    .dayline{
-      font-size:15px;
-      color:var(--text);
-      opacity:.92;
-    }
-    .accent{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:8px 10px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.08);
-      background: rgba(255,255,255,.03);
-      margin-top:10px;
-    }
-    .dot{
-      width:10px;
-      height:10px;
-      border-radius:999px;
-      background: var(--accent);
-      box-shadow: 0 0 0 4px rgba(255,255,255,.06);
+      color: var(--text);
+      background:
+        radial-gradient(1200px 600px at 20% 0%, rgba(59,130,246,.25), transparent 60%),
+        radial-gradient(1200px 600px at 80% 20%, rgba(34,197,94,.20), transparent 60%),
+        radial-gradient(900px 500px at 50% 100%, rgba(236,72,153,.10), transparent 60%),
+        var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
     }
 
-    .btns{ display:flex; gap:10px; flex-wrap:wrap; margin-top:14px; }
-    button{
-      appearance:none;
-      border:none;
-      cursor:pointer;
-      padding:12px 14px;
-      border-radius:14px;
-      font-weight:700;
-      font-size:14px;
-      color:#0b1220;
-      background: linear-gradient(180deg, var(--accent), var(--accent2));
-      box-shadow: 0 12px 26px rgba(0,0,0,.28);
+    .wrap { width: 100%; max-width: 520px; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      backdrop-filter: blur(10px);
     }
-    button.secondary{
-      color:var(--text);
-      background: rgba(255,255,255,.05);
-      border:1px solid var(--border);
-      box-shadow:none;
-      font-weight:650;
+
+    header { padding: 22px 22px 14px; border-bottom: 1px solid var(--border); }
+    h1 { margin: 0; font-size: 22px; letter-spacing: 0.2px; }
+    .sub { margin-top: 6px; color: var(--muted); font-size: 13px; line-height: 1.35; }
+
+    .content { padding: 18px 22px 22px; display: grid; gap: 14px; }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.06);
     }
-    .meta{
-      margin-top:14px;
-      display:grid;
-      grid-template-columns: 1fr;
-      gap:10px;
+
+    .dot { width: 12px; height: 12px; border-radius: 999px; background: var(--muted); }
+    .pill b { font-size: 14px; }
+    .pill span { color: var(--muted); font-size: 13px; }
+
+    .statusRow { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
+    .statusRow .left { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .dateTag { color: var(--muted); font-size: 13px; }
+
+    .big {
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,0.18);
+      padding: 16px;
+      display: grid;
+      gap: 8px;
     }
-    .box{
-      border:1px solid var(--border);
-      border-radius:16px;
-      padding:12px;
-      background: rgba(255,255,255,.03);
-    }
-    .box h2{
-      margin:0 0 8px 0;
-      font-size:14px;
-      color:var(--muted);
-      font-weight:700;
-      letter-spacing:.2px;
-    }
-    .box p{
-      margin:0;
-      font-size:13px;
-      color:var(--text);
-      opacity:.9;
-      line-height:1.45;
-    }
-    .log{
-      margin-top:8px;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      font-size:12px;
-      color:#cbd5e1;
-      white-space:pre-wrap;
-      word-break:break-word;
-      max-height:180px;
-      overflow:auto;
-      padding-top:8px;
-      border-top:1px dashed rgba(148,163,184,.25);
-    }
-    input[type="date"]{
-      background: rgba(255,255,255,.06);
-      border:1px solid var(--border);
+    .big .label { color: var(--muted); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; }
+    .big .value { font-size: 26px; font-weight: 750; display: flex; align-items: center; gap: 10px; }
+
+    .btn {
+      width: 100%;
+      border: 1px solid var(--border);
+      background: var(--btn);
       color: var(--text);
-      padding:10px 12px;
-      border-radius:12px;
-      font-size:14px;
+      border-radius: 16px;
+      padding: 14px 14px;
+      font-size: 15px;
+      font-weight: 650;
+      cursor: pointer;
+      transition: transform .05s ease, background .15s ease, border-color .15s ease;
+      user-select: none;
     }
-    .inline{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      flex-wrap:wrap;
+    .btn:hover { background: var(--btnHover); }
+    .btn:active { transform: scale(0.99); }
+    .btn.taken {
+      background: rgba(34,197,94,0.22);
+      border-color: rgba(34,197,94,0.55);
+      color: #eafff2;
     }
-    .note{
-      font-size:12px;
-      color:var(--muted);
-      margin-top:8px;
+
+    .history {
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.05);
+      padding: 14px;
     }
+    .history h2 { margin: 0 0 10px; font-size: 14px; color: var(--muted); font-weight: 700; letter-spacing: .02em; }
+    .history ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+    .history li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(0,0,0,0.12);
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #0b1020;
+      background: rgba(255,255,255,0.9);
+    }
+    .badge.a { background: rgba(34,197,94,0.95); }
+    .badge.b { background: rgba(59,130,246,0.95); }
+
+    footer { padding: 14px 22px 18px; color: rgba(238,242,255,0.45); font-size: 12px; }
   </style>
 </head>
+
 <body>
   <div class="wrap">
     <div class="card">
-      <div class="row">
-        <h1>Medication NFC Check</h1>
-        <div class="pill" id="todayPill">Today: —</div>
-      </div>
+      <header>
+        <h1>Medication Check</h1>
+        <div class="sub">Scan your NFC tag to see what to take today.</div>
+      </header>
 
-      <div class="big" id="bigBox">
-        <div class="label">Take:</div>
-        <p class="med" id="medName">—</p>
-        <div class="dayline" id="dayLine">—</div>
-
-        <div class="accent" id="accentPill">
-          <span class="dot" aria-hidden="true"></span>
-          <span id="accentText">—</span>
-        </div>
-
-        <div class="btns">
-          <button id="takenBtn">Taken?</button>
-          <button class="secondary" id="undoBtn">Undo last “Taken”</button>
-          <button class="secondary" id="resetBtn">Reset cycle start</button>
-        </div>
-      </div>
-
-      <div class="meta">
-        <div class="box">
-          <h2>Cycle start date</h2>
-          <div class="inline">
-            <input type="date" id="startDateInput" />
-            <button class="secondary" id="saveStartBtn">Save start date</button>
+      <div class="content">
+        <div class="statusRow">
+          <div class="left">
+            <div class="pill" id="dayPill">
+              <span class="dot" id="dayDot"></span>
+              <div>
+                <b id="dayText">Day 1 of 3</b><br />
+                <span id="todayText">Today: Aquaphor</span>
+              </div>
+            </div>
           </div>
-          <p class="note">
-            The cycle repeats every 3 days: <b>Day 1–2 = Aquaphor</b>, <b>Day 3 = Medication</b>.
-            Set the start date to whatever you want to be <b>Day 1</b>.
-          </p>
+          <div class="dateTag" id="dateTag"></div>
         </div>
 
-        <div class="box">
-          <h2>History (on this phone)</h2>
-          <p id="lastTaken">Last confirmed: —</p>
-          <div class="log" id="logBox">—</div>
+        <div class="big" id="medCard">
+          <div class="label">Take</div>
+          <div class="value" id="medValue">Aquaphor</div>
+        </div>
+
+        <button class="btn" id="takenBtn">Taken?</button>
+
+        <div class="history">
+          <h2>History (saved on this phone)</h2>
+          <ul id="historyList"></ul>
         </div>
       </div>
+
+      <footer>
+        Pattern repeats every 3 days: Aquaphor, Aquaphor, Medication.
+      </footer>
     </div>
   </div>
 
 <script>
-  // ====== SETTINGS ======
-  const MED_A = "Aquaphor";   // taken Day 1 & Day 2
-  const MED_B = "Medication"; // taken Day 3
+(() => {
+  const STORAGE_KEY_START = "medCheck_cycleStartISO";
+  const STORAGE_KEY_TAKEN = "medCheck_takenByDate";
+  const STORAGE_KEY_HISTORY = "medCheck_history";
 
-  // Colors (you asked: green for A, blue for B)
-  const THEME_A = { accent: "#22c55e", accent2: "#16a34a", label: "Green = Aquaphor days" };
-  const THEME_B = { accent: "#3b82f6", accent2: "#2563eb", label: "Blue = Medication day" };
+  const dayText = document.getElementById("dayText");
+  const todayText = document.getElementById("todayText");
+  const medValue = document.getElementById("medValue");
+  const dayDot = document.getElementById("dayDot");
+  const dateTag = document.getElementById("dateTag");
+  const medCard = document.getElementById("medCard");
+  const takenBtn = document.getElementById("takenBtn");
+  const historyList = document.getElementById("historyList");
 
-  // ====== STORAGE KEYS ======
-  const KEY_START = "medCycleStartDate"; // YYYY-MM-DD
-  const KEY_LOG = "medTakenLog";         // JSON array of entries
+  const MED_A = "Aquaphor";   // 2 days in a row
+  const MED_B = "Medication"; // 1 day
 
-  // ====== HELPERS ======
-  function pad(n){ return String(n).padStart(2,"0"); }
+  // ---- Helpers ----
+  const pad2 = n => String(n).padStart(2,"0");
+  const ymd = (d) => `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+  const parseISODate = (iso) => {
+    // stored as YYYY-MM-DD
+    const [y,m,dd] = iso.split("-").map(Number);
+    return new Date(y, m-1, dd);
+  };
+  const startOfToday = () => {
+    const d = new Date();
+    d.setHours(0,0,0,0);
+    return d;
+  };
+  const daysBetween = (a,b) => Math.floor((b - a) / 86400000);
 
-  function toYYYYMMDD(d){
-    const yr = d.getFullYear();
-    const mo = pad(d.getMonth()+1);
-    const da = pad(d.getDate());
-    return `${yr}-${mo}-${da}`;
+  const getStart = () => {
+    const saved = localStorage.getItem(STORAGE_KEY_START);
+    if (saved) return parseISODate(saved);
+
+    // First time: set start to today automatically
+    const t = startOfToday();
+    localStorage.setItem(STORAGE_KEY_START, ymd(t));
+    return t;
+  };
+
+  const getTakenMap = () => {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY_TAKEN) || "{}"); }
+    catch { return {}; }
+  };
+  const setTakenMap = (obj) => localStorage.setItem(STORAGE_KEY_TAKEN, JSON.stringify(obj));
+
+  const getHistory = () => {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY_HISTORY) || "[]"); }
+    catch { return []; }
+  };
+  const setHistory = (arr) => localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(arr));
+
+  // ---- Core cycle logic ----
+  function cycleInfo() {
+    const start = getStart();
+    const today = startOfToday();
+    const delta = daysBetween(start, today);
+
+    // day index 0,1,2 repeating
+    const idx = ((delta % 3) + 3) % 3;
+    const dayNum = idx + 1;
+
+    const med = (idx === 2) ? MED_B : MED_A;
+    const badgeClass = (idx === 2) ? "b" : "a";
+
+    return { start, today, idx, dayNum, med, badgeClass };
   }
 
-  function parseYYYYMMDD(str){
-    // Create date in local time (avoid timezone shifting)
-    const [y,m,d] = str.split("-").map(Number);
-    return new Date(y, m-1, d);
+  function render() {
+    const { today, dayNum, med, badgeClass } = cycleInfo();
+
+    // Date display
+    const pretty = today.toLocaleDateString(undefined, { weekday: "long", year: "numeric", month: "short", day: "numeric" });
+    dateTag.textContent = `Today is ${pretty}`;
+
+    // Day + medication
+    dayText.textContent = `Day ${dayNum} of 3`;
+    todayText.textContent = `Today: ${med}`;
+    medValue.textContent = med;
+
+    // Color accents (Aquaphor = green, Medication = blue)
+    const dotColor = (badgeClass === "a") ? "var(--aqua)" : "var(--med)";
+    dayDot.style.background = dotColor;
+    medCard.style.borderColor = (badgeClass === "a") ? "rgba(34,197,94,0.35)" : "rgba(59,130,246,0.35)";
+    medCard.style.background = (badgeClass === "a") ? "rgba(34,197,94,0.10)" : "rgba(59,130,246,0.10)";
+
+    // Taken state for today
+    const takenMap = getTakenMap();
+    const key = ymd(today);
+    const isTaken = !!takenMap[key];
+
+    takenBtn.classList.toggle("taken", isTaken);
+    takenBtn.textContent = isTaken ? "Taken ✓" : "Taken?";
+
+    renderHistory();
   }
 
-  function daysBetween(startDate, endDate){
-    // Compare at midnight local time
-    const s = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
-    const e = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
-    const ms = e - s;
-    return Math.floor(ms / (24*60*60*1000));
-  }
+  function renderHistory() {
+    const history = getHistory();
+    historyList.innerHTML = "";
 
-  function getOrInitStartDate(){
-    let s = localStorage.getItem(KEY_START);
-    if(!s){
-      // Default: today is Day 1 unless you set it
-      s = toYYYYMMDD(new Date());
-      localStorage.setItem(KEY_START, s);
-    }
-    return s;
-  }
-
-  function getLog(){
-    try{
-      const raw = localStorage.getItem(KEY_LOG);
-      if(!raw) return [];
-      const arr = JSON.parse(raw);
-      return Array.isArray(arr) ? arr : [];
-    }catch{
-      return [];
-    }
-  }
-
-  function setLog(arr){
-    localStorage.setItem(KEY_LOG, JSON.stringify(arr));
-  }
-
-  function formatPrettyDateTime(d){
-    const opts = { weekday:"short", year:"numeric", month:"short", day:"numeric", hour:"2-digit", minute:"2-digit" };
-    return new Intl.DateTimeFormat(undefined, opts).format(d);
-  }
-
-  // ====== CORE LOGIC ======
-  function getCycleDay(startYYYYMMDD, todayDate){
-    const start = parseYYYYMMDD(startYYYYMMDD);
-    const diff = daysBetween(start, todayDate);
-    // Day index in [0..2]
-    const idx = ((diff % 3) + 3) % 3; // safe mod
-    return idx + 1; // 1..3
-  }
-
-  function getMedicationForDay(day){
-    if(day === 3) return { med: MED_B, theme: THEME_B, code: "B" };
-    return { med: MED_A, theme: THEME_A, code: "A" };
-  }
-
-  function render(){
-    const today = new Date();
-    const todayStr = toYYYYMMDD(today);
-    document.getElementById("todayPill").textContent = `Today: ${todayStr}`;
-
-    const startStr = getOrInitStartDate();
-    const day = getCycleDay(startStr, today);
-
-    // Set input to current start date
-    document.getElementById("startDateInput").value = startStr;
-
-    const info = getMedicationForDay(day);
-
-    // Update medication + day text
-    document.getElementById("medName").textContent = info.med;
-    document.getElementById("dayLine").textContent = `Today is Day ${day} of 3.`;
-
-    // Theme colors
-    document.documentElement.style.setProperty("--accent", info.theme.accent);
-    document.documentElement.style.setProperty("--accent2", info.theme.accent2);
-    document.getElementById("accentText").textContent = info.theme.label;
-
-    // History
-    const log = getLog();
-    const last = log[0]; // newest first
-    document.getElementById("lastTaken").textContent = last
-      ? `Last confirmed: ${last.pretty} — ${last.med} (Day ${last.day}/3)`
-      : "Last confirmed: —";
-
-    // Log display
-    const logBox = document.getElementById("logBox");
-    if(log.length === 0){
-      logBox.textContent = "No entries yet.";
-    }else{
-      logBox.textContent = log.slice(0, 20).map(e =>
-        `${e.pretty} | Day ${e.day}/3 | ${e.med}`
-      ).join("\n");
-    }
-  }
-
-  // ====== BUTTON ACTIONS ======
-  document.getElementById("takenBtn").addEventListener("click", () => {
-    const today = new Date();
-    const todayStr = toYYYYMMDD(today);
-    const startStr = getOrInitStartDate();
-    const day = getCycleDay(startStr, today);
-    const info = getMedicationForDay(day);
-
-    const entry = {
-      iso: new Date().toISOString(),
-      pretty: formatPrettyDateTime(new Date()),
-      date: todayStr,
-      start: startStr,
-      day,
-      med: info.med
-    };
-
-    const log = getLog();
-    log.unshift(entry);
-    setLog(log);
-    render();
-
-    // Small confirmation
-    alert(`Saved: Day ${day}/3 → ${info.med}`);
-  });
-
-  document.getElementById("undoBtn").addEventListener("click", () => {
-    const log = getLog();
-    if(log.length === 0){
-      alert("Nothing to undo.");
+    if (!history.length) {
+      const li = document.createElement("li");
+      li.textContent = "No entries yet.";
+      historyList.appendChild(li);
       return;
     }
-    log.shift();
-    setLog(log);
-    render();
-  });
 
-  document.getElementById("saveStartBtn").addEventListener("click", () => {
-    const v = document.getElementById("startDateInput").value;
-    if(!v){
-      alert("Pick a start date first.");
-      return;
+    // newest first
+    for (const entry of history.slice().reverse()) {
+      const li = document.createElement("li");
+
+      const left = document.createElement("div");
+      left.textContent = entry.datePretty;
+
+      const badge = document.createElement("div");
+      badge.className = `badge ${entry.badgeClass}`;
+      badge.textContent = entry.med;
+
+      li.appendChild(left);
+      li.appendChild(badge);
+      historyList.appendChild(li);
     }
-    localStorage.setItem(KEY_START, v);
-    render();
-    alert(`Cycle start saved: ${v} (that date is Day 1)`);
-  });
+  }
 
-  document.getElementById("resetBtn").addEventListener("click", () => {
-    const todayStr = toYYYYMMDD(new Date());
-    localStorage.setItem(KEY_START, todayStr);
+  function markTakenToday() {
+    const { today, med, badgeClass } = cycleInfo();
+    const key = ymd(today);
+
+    const takenMap = getTakenMap();
+    if (takenMap[key]) return; // already taken today
+
+    takenMap[key] = true;
+    setTakenMap(takenMap);
+
+    // Save to history (on this phone)
+    const pretty = today.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+    const datePretty = `${pretty}`;
+
+    const history = getHistory();
+    history.push({
+      dateISO: key,
+      datePretty,
+      med,
+      badgeClass,
+      ts: Date.now()
+    });
+    setHistory(history);
+
     render();
-    alert(`Reset done. Today (${todayStr}) is now Day 1.`);
-  });
+  }
+
+  takenBtn.addEventListener("click", markTakenToday);
 
   // Initial render
   render();
+})();
 </script>
 </body>
 </html>
