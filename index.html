@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Medication Check</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      text-align: center;
+      padding: 40px;
+      font-size: 22px;
+    }
+    .med {
+      font-size: 32px;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Medication for Today</h1>
+
+<div class="med" id="result"></div>
+
+<script>
+  // 🔁 CHANGE THIS DATE (YYYY-MM-DD)
+  const startDate = new Date("2026-01-01");
+
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  startDate.setHours(0,0,0,0);
+
+  const daysSince = Math.floor((today - startDate) / (1000 * 60 * 60 * 24));
+  const cycleDay = ((daysSince % 3) + 3) % 3;
+
+  let medication = "";
+
+  if (cycleDay === 0 || cycleDay === 1) {
+    medication = "Medication A";
+  } else {
+    medication = "Medication B";
+  }
+
+  document.getElementById("result").textContent = medication;
+</script>
+
+</body>
+</html>
