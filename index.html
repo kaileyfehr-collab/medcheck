@@ -1,49 +1,421 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Medication Check</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Medication Cycle</title>
   <style>
-    body {
-      font-family: system-ui, -apple-system, sans-serif;
-      text-align: center;
-      padding: 40px;
-      font-size: 22px;
+    :root{
+      --bg: #0f172a;
+      --card: #111827;
+      --text: #e5e7eb;
+      --muted:#94a3b8;
+      --border:#243244;
+      --pill:#1f2937;
+
+      --accent:#22c55e;    /* default green */
+      --accent2:#16a34a;
     }
-    .med {
-      font-size: 32px;
-      font-weight: bold;
-      margin-top: 20px;
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: radial-gradient(1000px 600px at 20% 10%, rgba(34,197,94,.15), transparent 50%),
+                  radial-gradient(900px 500px at 80% 20%, rgba(59,130,246,.12), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+    }
+    .wrap{ width:min(680px, 100%); }
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border:1px solid var(--border);
+      border-radius:20px;
+      padding:18px;
+      box-shadow: 0 18px 40px rgba(0,0,0,.35);
+    }
+    .row{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+    }
+    h1{
+      margin:0;
+      font-size:20px;
+      letter-spacing:.2px;
+    }
+    .pill{
+      background: rgba(255,255,255,.04);
+      border:1px solid var(--border);
+      padding:8px 10px;
+      border-radius:999px;
+      font-size:13px;
+      color:var(--muted);
+    }
+    .big{
+      margin-top:14px;
+      border-radius:18px;
+      padding:16px;
+      border:1px solid var(--border);
+      background: rgba(17,24,39,.6);
+      position:relative;
+      overflow:hidden;
+    }
+    .big::before{
+      content:"";
+      position:absolute;
+      inset:-80px -60px auto auto;
+      width:220px;
+      height:220px;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.18), transparent 55%);
+      filter: blur(0px);
+      opacity:.7;
+      transform: rotate(18deg);
+      pointer-events:none;
+    }
+    .label{
+      color:var(--muted);
+      font-size:13px;
+      margin-bottom:6px;
+    }
+    .med{
+      font-size:34px;
+      font-weight:800;
+      line-height:1.05;
+      margin:0 0 10px 0;
+    }
+    .dayline{
+      font-size:15px;
+      color:var(--text);
+      opacity:.92;
+    }
+    .accent{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.03);
+      margin-top:10px;
+    }
+    .dot{
+      width:10px;
+      height:10px;
+      border-radius:999px;
+      background: var(--accent);
+      box-shadow: 0 0 0 4px rgba(255,255,255,.06);
+    }
+
+    .btns{ display:flex; gap:10px; flex-wrap:wrap; margin-top:14px; }
+    button{
+      appearance:none;
+      border:none;
+      cursor:pointer;
+      padding:12px 14px;
+      border-radius:14px;
+      font-weight:700;
+      font-size:14px;
+      color:#0b1220;
+      background: linear-gradient(180deg, var(--accent), var(--accent2));
+      box-shadow: 0 12px 26px rgba(0,0,0,.28);
+    }
+    button.secondary{
+      color:var(--text);
+      background: rgba(255,255,255,.05);
+      border:1px solid var(--border);
+      box-shadow:none;
+      font-weight:650;
+    }
+    .meta{
+      margin-top:14px;
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:10px;
+    }
+    .box{
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:12px;
+      background: rgba(255,255,255,.03);
+    }
+    .box h2{
+      margin:0 0 8px 0;
+      font-size:14px;
+      color:var(--muted);
+      font-weight:700;
+      letter-spacing:.2px;
+    }
+    .box p{
+      margin:0;
+      font-size:13px;
+      color:var(--text);
+      opacity:.9;
+      line-height:1.45;
+    }
+    .log{
+      margin-top:8px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size:12px;
+      color:#cbd5e1;
+      white-space:pre-wrap;
+      word-break:break-word;
+      max-height:180px;
+      overflow:auto;
+      padding-top:8px;
+      border-top:1px dashed rgba(148,163,184,.25);
+    }
+    input[type="date"]{
+      background: rgba(255,255,255,.06);
+      border:1px solid var(--border);
+      color: var(--text);
+      padding:10px 12px;
+      border-radius:12px;
+      font-size:14px;
+    }
+    .inline{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .note{
+      font-size:12px;
+      color:var(--muted);
+      margin-top:8px;
     }
   </style>
 </head>
 <body>
+  <div class="wrap">
+    <div class="card">
+      <div class="row">
+        <h1>Medication NFC Check</h1>
+        <div class="pill" id="todayPill">Today: —</div>
+      </div>
 
-<h1>Medication for Today</h1>
+      <div class="big" id="bigBox">
+        <div class="label">Take:</div>
+        <p class="med" id="medName">—</p>
+        <div class="dayline" id="dayLine">—</div>
 
-<div class="med" id="result"></div>
+        <div class="accent" id="accentPill">
+          <span class="dot" aria-hidden="true"></span>
+          <span id="accentText">—</span>
+        </div>
+
+        <div class="btns">
+          <button id="takenBtn">Taken?</button>
+          <button class="secondary" id="undoBtn">Undo last “Taken”</button>
+          <button class="secondary" id="resetBtn">Reset cycle start</button>
+        </div>
+      </div>
+
+      <div class="meta">
+        <div class="box">
+          <h2>Cycle start date</h2>
+          <div class="inline">
+            <input type="date" id="startDateInput" />
+            <button class="secondary" id="saveStartBtn">Save start date</button>
+          </div>
+          <p class="note">
+            The cycle repeats every 3 days: <b>Day 1–2 = Aquaphor</b>, <b>Day 3 = Medication</b>.
+            Set the start date to whatever you want to be <b>Day 1</b>.
+          </p>
+        </div>
+
+        <div class="box">
+          <h2>History (on this phone)</h2>
+          <p id="lastTaken">Last confirmed: —</p>
+          <div class="log" id="logBox">—</div>
+        </div>
+      </div>
+    </div>
+  </div>
 
 <script>
-  // 🔁 CHANGE THIS DATE (YYYY-MM-DD)
-  const startDate = new Date("2026-01-01");
+  // ====== SETTINGS ======
+  const MED_A = "Aquaphor";   // taken Day 1 & Day 2
+  const MED_B = "Medication"; // taken Day 3
 
-  const today = new Date();
-  today.setHours(0,0,0,0);
-  startDate.setHours(0,0,0,0);
+  // Colors (you asked: green for A, blue for B)
+  const THEME_A = { accent: "#22c55e", accent2: "#16a34a", label: "Green = Aquaphor days" };
+  const THEME_B = { accent: "#3b82f6", accent2: "#2563eb", label: "Blue = Medication day" };
 
-  const daysSince = Math.floor((today - startDate) / (1000 * 60 * 60 * 24));
-  const cycleDay = ((daysSince % 3) + 3) % 3;
+  // ====== STORAGE KEYS ======
+  const KEY_START = "medCycleStartDate"; // YYYY-MM-DD
+  const KEY_LOG = "medTakenLog";         // JSON array of entries
 
-  let medication = "";
+  // ====== HELPERS ======
+  function pad(n){ return String(n).padStart(2,"0"); }
 
-  if (cycleDay === 0 || cycleDay === 1) {
-    medication = "Medication A";
-  } else {
-    medication = "Medication B";
+  function toYYYYMMDD(d){
+    const yr = d.getFullYear();
+    const mo = pad(d.getMonth()+1);
+    const da = pad(d.getDate());
+    return `${yr}-${mo}-${da}`;
   }
 
-  document.getElementById("result").textContent = medication;
-</script>
+  function parseYYYYMMDD(str){
+    // Create date in local time (avoid timezone shifting)
+    const [y,m,d] = str.split("-").map(Number);
+    return new Date(y, m-1, d);
+  }
 
+  function daysBetween(startDate, endDate){
+    // Compare at midnight local time
+    const s = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+    const e = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
+    const ms = e - s;
+    return Math.floor(ms / (24*60*60*1000));
+  }
+
+  function getOrInitStartDate(){
+    let s = localStorage.getItem(KEY_START);
+    if(!s){
+      // Default: today is Day 1 unless you set it
+      s = toYYYYMMDD(new Date());
+      localStorage.setItem(KEY_START, s);
+    }
+    return s;
+  }
+
+  function getLog(){
+    try{
+      const raw = localStorage.getItem(KEY_LOG);
+      if(!raw) return [];
+      const arr = JSON.parse(raw);
+      return Array.isArray(arr) ? arr : [];
+    }catch{
+      return [];
+    }
+  }
+
+  function setLog(arr){
+    localStorage.setItem(KEY_LOG, JSON.stringify(arr));
+  }
+
+  function formatPrettyDateTime(d){
+    const opts = { weekday:"short", year:"numeric", month:"short", day:"numeric", hour:"2-digit", minute:"2-digit" };
+    return new Intl.DateTimeFormat(undefined, opts).format(d);
+  }
+
+  // ====== CORE LOGIC ======
+  function getCycleDay(startYYYYMMDD, todayDate){
+    const start = parseYYYYMMDD(startYYYYMMDD);
+    const diff = daysBetween(start, todayDate);
+    // Day index in [0..2]
+    const idx = ((diff % 3) + 3) % 3; // safe mod
+    return idx + 1; // 1..3
+  }
+
+  function getMedicationForDay(day){
+    if(day === 3) return { med: MED_B, theme: THEME_B, code: "B" };
+    return { med: MED_A, theme: THEME_A, code: "A" };
+  }
+
+  function render(){
+    const today = new Date();
+    const todayStr = toYYYYMMDD(today);
+    document.getElementById("todayPill").textContent = `Today: ${todayStr}`;
+
+    const startStr = getOrInitStartDate();
+    const day = getCycleDay(startStr, today);
+
+    // Set input to current start date
+    document.getElementById("startDateInput").value = startStr;
+
+    const info = getMedicationForDay(day);
+
+    // Update medication + day text
+    document.getElementById("medName").textContent = info.med;
+    document.getElementById("dayLine").textContent = `Today is Day ${day} of 3.`;
+
+    // Theme colors
+    document.documentElement.style.setProperty("--accent", info.theme.accent);
+    document.documentElement.style.setProperty("--accent2", info.theme.accent2);
+    document.getElementById("accentText").textContent = info.theme.label;
+
+    // History
+    const log = getLog();
+    const last = log[0]; // newest first
+    document.getElementById("lastTaken").textContent = last
+      ? `Last confirmed: ${last.pretty} — ${last.med} (Day ${last.day}/3)`
+      : "Last confirmed: —";
+
+    // Log display
+    const logBox = document.getElementById("logBox");
+    if(log.length === 0){
+      logBox.textContent = "No entries yet.";
+    }else{
+      logBox.textContent = log.slice(0, 20).map(e =>
+        `${e.pretty} | Day ${e.day}/3 | ${e.med}`
+      ).join("\n");
+    }
+  }
+
+  // ====== BUTTON ACTIONS ======
+  document.getElementById("takenBtn").addEventListener("click", () => {
+    const today = new Date();
+    const todayStr = toYYYYMMDD(today);
+    const startStr = getOrInitStartDate();
+    const day = getCycleDay(startStr, today);
+    const info = getMedicationForDay(day);
+
+    const entry = {
+      iso: new Date().toISOString(),
+      pretty: formatPrettyDateTime(new Date()),
+      date: todayStr,
+      start: startStr,
+      day,
+      med: info.med
+    };
+
+    const log = getLog();
+    log.unshift(entry);
+    setLog(log);
+    render();
+
+    // Small confirmation
+    alert(`Saved: Day ${day}/3 → ${info.med}`);
+  });
+
+  document.getElementById("undoBtn").addEventListener("click", () => {
+    const log = getLog();
+    if(log.length === 0){
+      alert("Nothing to undo.");
+      return;
+    }
+    log.shift();
+    setLog(log);
+    render();
+  });
+
+  document.getElementById("saveStartBtn").addEventListener("click", () => {
+    const v = document.getElementById("startDateInput").value;
+    if(!v){
+      alert("Pick a start date first.");
+      return;
+    }
+    localStorage.setItem(KEY_START, v);
+    render();
+    alert(`Cycle start saved: ${v} (that date is Day 1)`);
+  });
+
+  document.getElementById("resetBtn").addEventListener("click", () => {
+    const todayStr = toYYYYMMDD(new Date());
+    localStorage.setItem(KEY_START, todayStr);
+    render();
+    alert(`Reset done. Today (${todayStr}) is now Day 1.`);
+  });
+
+  // Initial render
+  render();
+</script>
 </body>
 </html>
